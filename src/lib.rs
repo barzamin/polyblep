@@ -4,6 +4,7 @@ use std::f64::consts::PI;
 pub enum Wave {
     Sine,
     Sawtooth,
+    Square,
 }
 
 fn blep(t: f64, dt: f64) -> f64 {
@@ -15,7 +16,7 @@ fn blep(t: f64, dt: f64) -> f64 {
     } else if t > (1. - dt) {
         // -1 < t' < 0
 
-        let t = (t - 1.0) / dt;
+        let t = (t - 1.) / dt;
         t.powi(2) + 2. * t + 1.
     } else {
         0.
@@ -47,6 +48,11 @@ impl Oscillator {
         match shape {
             Wave::Sawtooth => self.phase / PI - 1.,
             Wave::Sine => self.phase.sin(),
+            Wave::Square => if self.phase < PI {
+                1.
+            } else {
+                -1.
+            },
         }
     }
 
@@ -54,6 +60,9 @@ impl Oscillator {
         let t = self.phase / (2. * PI);
         let sample = match self.wave {
             Wave::Sawtooth => self.naive_sample(self.wave) - blep(t, self.dt()),
+            Wave::Square => {
+                self.naive_sample(self.wave) + blep(t, self.dt()) - blep((t + 0.5) % 1., self.dt())
+            }
             Wave::Sine => self.naive_sample(self.wave),
         };
 
