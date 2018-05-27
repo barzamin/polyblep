@@ -41,6 +41,14 @@ impl Oscillator {
         }
     }
 
+    pub fn set_frequency(&mut self, frequency: f64) {
+        self.frequency = frequency;
+    }
+
+    pub fn set_sample_rate(&mut self, sample_rate: f64) {
+        self.sample_rate = sample_rate;
+    }
+
     fn dt(&self) -> f64 {
         self.frequency / self.sample_rate
     }
