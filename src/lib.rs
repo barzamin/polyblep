@@ -2,6 +2,7 @@ use std::f64::consts::PI;
 
 #[derive(Debug, Clone, Copy)]
 pub enum Wave {
+    Sine,
     Sawtooth,
 }
 
@@ -45,24 +46,23 @@ impl Oscillator {
     fn naive_sample(&self, shape: Wave) -> f64 {
         match shape {
             Wave::Sawtooth => self.phase / PI - 1.,
+            Wave::Sine => self.phase.sin(),
         }
     }
 
-    fn blepped_sample(&self) -> f64 {
-        let t = self.phase / (2. * PI);
-
-        self.naive_sample(self.wave) - blep(t, self.dt())
-    }
-
     pub fn next_sample(&mut self) -> f64 {
-        let v = self.blepped_sample();
+        let t = self.phase / (2. * PI);
+        let sample = match self.wave {
+            Wave::Sawtooth => self.naive_sample(self.wave) - blep(t, self.dt()),
+            Wave::Sine => self.naive_sample(self.wave),
+        };
 
         self.phase += self.dt() * (2. * PI);
         while self.phase >= 2. * PI {
             self.phase -= 2. * PI;
         }
 
-        v
+        sample
     }
 }
 
