@@ -23,6 +23,7 @@ fn blep(t: f64, dt: f64) -> f64 {
     }
 }
 
+#[derive(Debug, Copy, Clone)]
 pub struct Oscillator {
     wave: Wave,
     phase: f64,
